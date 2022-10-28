@@ -1,0 +1,24 @@
+* {
+    overflow: hidden;
+}
+
+section {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  height: 100vh;
+
+  header h1 {
+    font: 400 36px Roboto, sans-serif;
+  }
+
+  main {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+
+    width: 100%;
+  }
+}

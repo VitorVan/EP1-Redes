@@ -3,6 +3,9 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "./out-tsc/app",
+    "paths": {
+      "rxjs": ["node_modules/rxjs"]
+    },
     "types": []
   },
   "files": [
