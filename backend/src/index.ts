@@ -6,14 +6,21 @@ import morgan from 'morgan'
 
 import { startGameInterval, createGameState as createSnakeGameState } from './snake/game';
 import { FRAME_RATE } from './snake/constants';
+import IJoin from './types/socket.types';
 
 const app = express();
 const httpServer = http.createServer(app);
-const io = new socketio.Server(httpServer, {cors: {origin: '*'}});
+const io = new socketio.Server(
+  httpServer,
+  {
+    cors: {origin: '*'}
+  }
+);
 
 app.use(cors({
     origin: '*'
 }));
+
 app.use(morgan('dev'));
 
 io.on('connection', (socket) => {
@@ -21,20 +28,16 @@ io.on('connection', (socket) => {
 
   socket.emit('message', {message: 'Hello World'});
 
-  socket.on('join', (room) => {
-    console.log(`User joined room ->  ${room}`);
-    socket.join(room);
-    socket.emit('message', `You joined room ->  ${room}`);
+  socket.on('join', (props: IJoin) => {
+    console.log(`User joined room ->  ${props.room}`);
+    socket.join(props.room);
+    socket.emit('message', `You joined room ->  ${props.room}`);
+    socket.to(props.room).emit('roomMessage', `User joined room ->  ${props.room}`);
     socket.emit('rooms', io.sockets.adapter.rooms);
-    socket.broadcast.emit('rooms', io.sockets.adapter.rooms);
+    socket.broadcast.emit('rooms', Array.from(io.sockets.adapter.rooms));
+    console.log('user rooms', socket.rooms)
+    console.log('io rooms', Array.from(io.sockets.adapter.rooms.keys()))
   })
-})
-
-io.on('connection', (socket) => {
-  console.log(`New user started snake game session ->  ${socket.id}`);
-
-  const state = createSnakeGameState();
-  startGameInterval(socket, state);
 })
 
 
