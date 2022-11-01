@@ -4,7 +4,7 @@ import socketio from 'socket.io';
 import cors from 'cors'
 import morgan from 'morgan'
 
-import { startGameInterval, createGameState as createSnakeGameState } from './snake/game';
+import { startGameInterval, createGameState as createSnakeGameState, handleKeydown } from './snake/game';
 import { FRAME_RATE } from './snake/constants';
 import IJoin from './types/socket.types';
 
@@ -42,6 +42,10 @@ io.on('connection', (socket) => {
 
 io.on('connection', (socket) => {
   const state = createSnakeGameState();
+
+  socket.on('keydown', (keyCode) => {
+    handleKeydown(state, keyCode)
+  });
 
   startGameInterval(socket, state);
 })

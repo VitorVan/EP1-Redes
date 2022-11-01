@@ -109,9 +109,42 @@ function gameLoop(state: GameState): number {
   return 0;
 }
 
+function handleKeydown(state: GameState, keyCode: string) {
+  let newKeyCode: number = 0;
+  try {
+      newKeyCode = parseInt(keyCode);
+    } catch(e) {
+      console.error(e);
+      return;
+    }
+
+    const vel = getUpdatedVelocity(newKeyCode);
+
+    if (vel) {
+      state.player.vel = vel;
+    }
+}
+
+function getUpdatedVelocity(keyCode: number) {
+  switch (keyCode) {
+    case 37: {
+      return { x: -1, y: 0 }
+    }
+    case 38: {
+      return { x: 0, y: -1 }
+    }
+    case 39: {
+      return { x: 1, y: 0 }
+    }
+    case 40: {
+      return { x: 0, y: 1 }
+    }
+  }
+}
 
 
 export {
   createGameState,
   startGameInterval,
+  handleKeydown
 };

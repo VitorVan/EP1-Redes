@@ -3,6 +3,7 @@ import React, { useRef, useEffect } from 'react';
 import { CanvasContainer } from './styles';
 
 import { io } from "socket.io-client";
+import { inherits } from 'util';
 const socket = io("http://localhost:3000/");
 
 interface GameState {
@@ -56,19 +57,10 @@ export default function SnakeGame() {
   useEffect(() => {
     const canvas = canvasRef.current;;
 
+
     if (canvas != null) {
-      const context = canvas.getContext('2d');
-      if (context != null) {
-        canvas.width = 600;
-        canvas.height = 600;
+      init(gameState ,canvas);
 
-        context.fillStyle = '#15BDAC'
-        context.fillRect(0, 0, canvas!.width, canvas!.height);
-
-        document.addEventListener('keydown', keydown);
-        paintGame(gameState, canvas, context);
-        socket.on('gameState', (gameState) => handleGameState(gameState, canvas, context));
-      }
     }
   }, [])
 
@@ -80,8 +72,35 @@ export default function SnakeGame() {
   )
 }
 
+function newGame(gameState: GameState, canvas: HTMLCanvasElement) {
+  socket.emit('newGame');
+  init(gameState, canvas);
+}
+
+function joinGame(gameState: GameState, canvas: HTMLCanvasElement) {
+  //const code = gameCodeInput.value;
+  //socket.emit('joinGame', code);
+  init(gameState, canvas);
+}
+
+function init(gameState: GameState, canvas: HTMLCanvasElement) {
+  const context = canvas.getContext('2d');
+    if (context != null) {
+      canvas.width = 600;
+      canvas.height = 600;
+
+      context.fillStyle = '#15BDAC'
+      context.fillRect(0, 0, canvas!.width, canvas!.height);
+
+      document.addEventListener('keydown', keydown);
+      paintGame(gameState, canvas, context);
+      socket.on('gameState', (gameState) => handleGameState(gameState, canvas, context));
+      socket.on('gameOver', handleGameOver);
+    }
+}
+
 function keydown(e: KeyboardEvent) {
-  console.log(e.keyCode)
+  socket.emit('keydown', e.keyCode);
 }
 
 function paintGame(state: GameState, canvas: HTMLCanvasElement, context: CanvasRenderingContext2D) {
@@ -111,4 +130,9 @@ function paintPlayer(state: GameState, canvas: HTMLCanvasElement, context: Canva
 function handleGameState(gameState: string, canvas: HTMLCanvasElement, context: CanvasRenderingContext2D) {
   const newGameState: GameState = JSON.parse(gameState);
   requestAnimationFrame(() => paintGame(newGameState, canvas, context));
+}
+
+function handleGameOver() {
+  console.log('perdeu')
+  alert("Você perdeu!")
 }
