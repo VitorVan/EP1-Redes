@@ -40,6 +40,11 @@ io.on('connection', (socket) => {
   })
 })
 
+io.on('connection', (socket) => {
+  const state = createSnakeGameState();
+
+  startGameInterval(socket, state);
+})
 
 
 //Get hello world

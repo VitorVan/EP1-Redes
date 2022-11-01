@@ -15,6 +15,15 @@ socket.on("disconnect", () => {
   console.log("Client has disconnected from socket");
 });
 
+socket.on("message", (msg) => {
+  console.log(msg);
+});
+
+socket.on("gameState", (gameState) => {
+  console.log(gameState);
+});
+
+
 
 function App() {
   return (

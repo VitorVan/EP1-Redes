@@ -1,7 +1,9 @@
 import React, { useRef, useEffect } from 'react';
-import { createTextChangeRange } from 'typescript';
 
 import { CanvasContainer } from './styles';
+
+import { io } from "socket.io-client";
+const socket = io("http://localhost:3000/");
 
 interface GameState {
   player: {
@@ -41,7 +43,7 @@ export default function SnakeGame() {
       snake: [
         {x: 1, y: 10},
         {x: 2, y: 10},
-        {x: 3, y: 10}, 
+        {x: 3, y: 10},
       ],
     },
     food: {
@@ -53,23 +55,24 @@ export default function SnakeGame() {
 
   useEffect(() => {
     const canvas = canvasRef.current;;
-    let context = null;
 
     if (canvas != null) {
-      context = canvas.getContext('2d');
+      const context = canvas.getContext('2d');
       if (context != null) {
         canvas.width = 600;
         canvas.height = 600;
-      
+
         context.fillStyle = '#15BDAC'
         context.fillRect(0, 0, canvas!.width, canvas!.height);
-  
+
         document.addEventListener('keydown', keydown);
         paintGame(gameState, canvas, context);
+        socket.on('gameState', (gameState) => handleGameState(gameState, canvas, context));
       }
     }
   }, [])
-  
+
+
   return (
     <CanvasContainer id='gameScreen'>
       <canvas ref={canvasRef}/>
@@ -103,4 +106,9 @@ function paintPlayer(state: GameState, canvas: HTMLCanvasElement, context: Canva
   for (let bodyPart of snake) {
     context.fillRect(bodyPart.x * size, bodyPart.y * size, size, size);
   }
+}
+
+function handleGameState(gameState: string, canvas: HTMLCanvasElement, context: CanvasRenderingContext2D) {
+  const newGameState: GameState = JSON.parse(gameState);
+  requestAnimationFrame(() => paintGame(newGameState, canvas, context));
 }
