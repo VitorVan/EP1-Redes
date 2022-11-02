@@ -5,7 +5,7 @@ import Routes from './routes';
 
 import { io } from "socket.io-client";
 
-const socket = io("http://localhost:3000/");
+export const socket = io("http://localhost:3000/");
 
 socket.on("connect", () => {
   console.log("Client has connected to socket", socket.id); // x8WIv7-mJelg7on_ALbx
@@ -18,12 +18,6 @@ socket.on("disconnect", () => {
 socket.on("message", (msg) => {
   console.log(msg);
 });
-
-socket.on("gameState", (gameState) => {
-  console.log(gameState);
-});
-
-
 
 function App() {
   return (

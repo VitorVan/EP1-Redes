@@ -2,12 +2,9 @@ import React, { useRef, useEffect } from 'react';
 
 import { CanvasContainer } from './styles';
 
-import { io } from "socket.io-client";
-import { inherits } from 'util';
-const socket = io("http://localhost:3000/");
-
+import { socket } from "../../App";
 interface GameState {
-  player: {
+  players: Array<{
     pos: {
       x: number,
       y: number,
@@ -20,7 +17,7 @@ interface GameState {
       x: number,
       y: number,
     }>
-  },
+  }>,
   food: {
     x: number,
     y: number,
@@ -28,31 +25,51 @@ interface GameState {
   gridsize: number,
 }
 
+let playerNumber: number;
+
 export default function SnakeGame() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const gameState = {
-    player: {
-      pos: {
-        x: 3,
-        y: 10
+    players: [
+      {
+        pos: {
+          x: 3,
+          y: 10,
+        },
+        vel: {
+          x: 1,
+          y: 0,
+        },
+        snake: [
+          {x: 1, y: 10},
+          {x: 2, y: 10},
+          {x: 3, y: 10},
+        ]
       },
-      vel: {
-        x: 1,
-        y: 0
+      {
+        pos: {
+          x: 10,
+          y: 10,
+        },
+        vel: {
+          x: -1,
+          y: 0,
+        },
+        snake: [
+          {x: 20, y: 10},
+          {x: 19, y: 10},
+          {x: 18, y: 10},
+        ]
       },
-      snake: [
-        {x: 1, y: 10},
-        {x: 2, y: 10},
-        {x: 3, y: 10},
-      ],
-    },
+    ],
     food: {
-      x: 7,
-      y: 7,
+      x: 0,
+      y: 0,
     },
     gridsize: 20,
-  };
+  }
+
 
   useEffect(() => {
     const canvas = canvasRef.current;;
@@ -60,7 +77,6 @@ export default function SnakeGame() {
 
     if (canvas != null) {
       init(gameState ,canvas);
-
     }
   }, [])
 
@@ -70,17 +86,6 @@ export default function SnakeGame() {
       <canvas ref={canvasRef}/>
     </CanvasContainer>
   )
-}
-
-function newGame(gameState: GameState, canvas: HTMLCanvasElement) {
-  socket.emit('newGame');
-  init(gameState, canvas);
-}
-
-function joinGame(gameState: GameState, canvas: HTMLCanvasElement) {
-  //const code = gameCodeInput.value;
-  //socket.emit('joinGame', code);
-  init(gameState, canvas);
 }
 
 function init(gameState: GameState, canvas: HTMLCanvasElement) {
@@ -93,9 +98,10 @@ function init(gameState: GameState, canvas: HTMLCanvasElement) {
       context.fillRect(0, 0, canvas!.width, canvas!.height);
 
       document.addEventListener('keydown', keydown);
-      paintGame(gameState, canvas, context);
       socket.on('gameState', (gameState) => handleGameState(gameState, canvas, context));
-      socket.on('gameOver', handleGameOver);
+      socket.off('gameOver').on('gameOver', handleGameOver);
+      socket.on('init', handleInit);
+      socket.off('gameCode').on('gameCode', handleGameCode);
     }
 }
 
@@ -114,14 +120,15 @@ function paintGame(state: GameState, canvas: HTMLCanvasElement, context: CanvasR
   context.fillStyle = '#DC3131';
   context.fillRect(food.x * size, food.y * size, size, size);
 
-  paintPlayer(state, canvas, context, size);
+  paintPlayer(state.players[0], canvas, context, size, '#575453');
+  paintPlayer(state.players[1], canvas, context, size, '#F9E8CE');
 }
 
-function paintPlayer(state: GameState, canvas: HTMLCanvasElement, context: CanvasRenderingContext2D, size: number) {
-  const playerState = state.player;
-  const snake = playerState.snake;
+function paintPlayer(state: any, canvas: HTMLCanvasElement, context: CanvasRenderingContext2D, size: number, color: string) {
 
-  context.fillStyle = '#575453';
+  const snake = state.snake;
+
+  context.fillStyle = color;
   for (let bodyPart of snake) {
     context.fillRect(bodyPart.x * size, bodyPart.y * size, size, size);
   }
@@ -132,7 +139,20 @@ function handleGameState(gameState: string, canvas: HTMLCanvasElement, context: 
   requestAnimationFrame(() => paintGame(newGameState, canvas, context));
 }
 
-function handleGameOver() {
-  console.log('perdeu')
-  alert("Você perdeu!")
+function handleGameOver(obj: string) {
+  const winner = JSON.parse(obj).winner;
+
+  if (winner === playerNumber ) {
+    alert("Voce ganhou!");
+  } else {
+    alert("Você perdeu!")
+  }
+}
+
+function handleInit(number: string) {
+  playerNumber = parseInt(number);
+}
+
+function handleGameCode(gameCode: string) {
+  console.log(gameCode);
 }

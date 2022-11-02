@@ -4,13 +4,13 @@ import socketio from 'socket.io';
 import cors from 'cors'
 import morgan from 'morgan'
 
-import { startGameInterval, createGameState as createSnakeGameState, handleKeydown } from './snake/game';
-import { FRAME_RATE } from './snake/constants';
+import { handleNewJoin as handleNewSnakeJoin } from './snake/game';
 import IJoin from './types/socket.types';
+const crypto = require("crypto");
 
 const app = express();
 const httpServer = http.createServer(app);
-const io = new socketio.Server(
+export const io = new socketio.Server(
   httpServer,
   {
     cors: {origin: '*'}
@@ -41,13 +41,9 @@ io.on('connection', (socket) => {
 })
 
 io.on('connection', (socket) => {
-  const state = createSnakeGameState();
-
-  socket.on('keydown', (keyCode) => {
-    handleKeydown(state, keyCode)
+  socket.on('joinSnake', () => {
+    handleNewSnakeJoin(socket);
   });
-
-  startGameInterval(socket, state);
 })
 
 
@@ -59,3 +55,9 @@ app.get('/', (req, res) => {
 httpServer.listen(3000, () => {
   console.log('Server is running on port 3000');
 });
+
+export function generateNewId(): string {
+  const id = crypto.randomBytes(4).toString('hex');
+  console.log(id);
+  return id;
+}
