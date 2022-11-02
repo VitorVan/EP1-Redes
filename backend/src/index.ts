@@ -58,6 +58,5 @@ httpServer.listen(3000, () => {
 
 export function generateNewId(): string {
   const id = crypto.randomBytes(4).toString('hex');
-  console.log(id);
   return id;
 }

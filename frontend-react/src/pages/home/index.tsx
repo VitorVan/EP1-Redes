@@ -2,11 +2,13 @@ import React from 'react';
 import jogoDaVelha from '../../images/jogoDaVelha.svg';
 import snake from '../../images/snake.svg';
 import { Container, Title, NavbarLink, GameTitle, ButtonsContainer } from './styles';
+import { handleInit } from '../../components/snakeGame'
 
 import { socket } from '../../App';
 
 function handleJoinSnake() {
   console.log('Entrou no jogo da cobrinha');
+  socket.on('init', handleInit);
   socket.emit('joinSnake')
 }
 

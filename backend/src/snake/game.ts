@@ -24,12 +24,14 @@ interface GameState {
     y: number,
   },
   gridsize: number,
+  isActive: number,
 }
 
 const state: any = {};
 const clientRooms: any = {};
 let waitingRoomState: number = 1;
 let lastCreatedGameRoom: string;
+let lastKeyPressed: number = 39;
 
 function initGame(): GameState {
   const state: GameState = createGameState();
@@ -65,9 +67,9 @@ function createGameState() {
           y: 0,
         },
         snake: [
-          {x: 20, y: 10},
-          {x: 19, y: 10},
-          {x: 18, y: 10},
+          {x: 20, y: 20},
+          {x: 19, y: 20},
+          {x: 18, y: 20},
         ]
       },
     ],
@@ -76,6 +78,7 @@ function createGameState() {
       y: 0,
     },
     gridsize: GRID_SIZE,
+    isActive: 1,
   }
 }
 
@@ -85,6 +88,7 @@ function startGameInterval(roomName: string) {
     if (!winner) {
       emitGameState(roomName, state[roomName]);
     } else {
+      state[roomName].isActive = 0;
       emitGameOver(roomName, winner);
       state[roomName] = null;
       clearInterval(intervalId);
@@ -98,7 +102,6 @@ function emitGameState(roomName: string, state: GameState) {
 
 function emitGameOver(roomName: string, winner: number) {
   io.sockets.in(roomName).emit('gameOver', JSON.stringify({ winner }));
-  console.log(winner);
 }
 
 function randomFood(state: GameState): void {
@@ -168,6 +171,14 @@ function gameLoop(state: GameState): number {
     playerOne.snake.shift();
   }
 
+  if(playerOne.vel.x || playerOne.vel.y) {
+    for (let cell of playerTwo.snake) {
+      if (cell.x === playerOne.pos.x && cell.y === playerOne.pos.y) {
+        return 2;
+      }
+    }
+  }
+
   if(playerTwo.vel.x || playerTwo.vel.y) {
     for (let cell of playerTwo.snake) {
       if (cell.x === playerTwo.pos.x && cell.y === playerTwo.pos.y) {
@@ -176,6 +187,14 @@ function gameLoop(state: GameState): number {
     }
     playerTwo.snake.push({...playerTwo.pos});
     playerTwo.snake.shift();
+  }
+
+  if(playerTwo.vel.x || playerTwo.vel.y) {
+    for (let cell of playerOne.snake) {
+      if (cell.x === playerTwo.pos.x && cell.y === playerTwo.pos.y) {
+        return 1;
+      }
+    }
   }
 
   return 0;
@@ -196,7 +215,7 @@ function handleKeydown(socket: any, state: any, keyCode: string) {
 
   const vel = getUpdatedVelocity(newKeyCode);
 
-  if (vel) {
+  if (vel && state[roomName]) {
     state[roomName].players[socket.number - 1].vel = vel;
   }
 }
@@ -204,15 +223,23 @@ function handleKeydown(socket: any, state: any, keyCode: string) {
 function getUpdatedVelocity(keyCode: number) {
   switch (keyCode) {
     case 37: {
+      if (lastKeyPressed === 39) return;
+      lastKeyPressed = 37;
       return { x: -1, y: 0 }
     }
     case 38: {
+      if (lastKeyPressed === 40) return;
+      lastKeyPressed = 38;
       return { x: 0, y: -1 }
     }
     case 39: {
+      if (lastKeyPressed === 37) return;
+      lastKeyPressed = 39;
       return { x: 1, y: 0 }
     }
     case 40: {
+      if (lastKeyPressed === 38) return;
+      lastKeyPressed = 40;
       return { x: 0, y: 1 }
     }
   }

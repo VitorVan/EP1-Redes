@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 
 import { CanvasContainer } from './styles';
 
@@ -53,13 +53,13 @@ export default function SnakeGame() {
           y: 10,
         },
         vel: {
-          x: -1,
+          x: 1,
           y: 0,
         },
         snake: [
-          {x: 20, y: 10},
-          {x: 19, y: 10},
-          {x: 18, y: 10},
+          {x: 20, y: 20},
+          {x: 19, y: 20},
+          {x: 18, y: 20},
         ]
       },
     ],
@@ -70,16 +70,13 @@ export default function SnakeGame() {
     gridsize: 20,
   }
 
-
   useEffect(() => {
     const canvas = canvasRef.current;;
-
 
     if (canvas != null) {
       init(gameState ,canvas);
     }
   }, [])
-
 
   return (
     <CanvasContainer id='gameScreen'>
@@ -99,8 +96,7 @@ function init(gameState: GameState, canvas: HTMLCanvasElement) {
 
       document.addEventListener('keydown', keydown);
       socket.on('gameState', (gameState) => handleGameState(gameState, canvas, context));
-      socket.off('gameOver').on('gameOver', handleGameOver);
-      socket.on('init', handleInit);
+      socket.off('gameOver').on('gameOver', (winner) => handleGameOver(winner, canvas, context));
       socket.off('gameCode').on('gameCode', handleGameCode);
     }
 }
@@ -139,17 +135,30 @@ function handleGameState(gameState: string, canvas: HTMLCanvasElement, context: 
   requestAnimationFrame(() => paintGame(newGameState, canvas, context));
 }
 
-function handleGameOver(obj: string) {
+function handleGameOver(obj: string, canvas: HTMLCanvasElement, context: CanvasRenderingContext2D) {
   const winner = JSON.parse(obj).winner;
 
+  console.log(winner)
+  console.log(playerNumber)
+
   if (winner === playerNumber ) {
-    alert("Voce ganhou!");
+    context.fillStyle = '#15BD6C';
+    context.fillRect(0, 0, canvas!.width, canvas!.height);
+    context.fillStyle = "#ffffff";
+    context.textAlign = "center";
+    context.font = "30px Arial";
+    context.fillText("Você Ganhou!", 300, 300);
   } else {
-    alert("Você perdeu!")
+    context.fillStyle = '#C64C44';
+    context.fillRect(0, 0, canvas!.width, canvas!.height);
+    context.fillStyle = "#ffffff";
+    context.textAlign = "center";
+    context.font = "30px Arial";
+    context.fillText("Você Perdeu!", 300, 300);
   }
 }
 
-function handleInit(number: string) {
+export function handleInit(number: string) {
   playerNumber = parseInt(number);
 }
 
