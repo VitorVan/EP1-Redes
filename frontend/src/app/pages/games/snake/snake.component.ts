@@ -31,9 +31,6 @@ interface GameState {
 })
 
 export class SnakeComponent implements OnInit {
-
-
-
   // VARIÁVEIS GLOBAIS
   @ViewChild('canvas', { static: true })
   canvas: ElementRef<HTMLCanvasElement>;
@@ -107,8 +104,7 @@ export class SnakeComponent implements OnInit {
 
   handleGameState(receivedGameState: string) {
     const gameState = JSON.parse(receivedGameState);
-    console.log(gameState);
-    requestAnimationFrame(() => this.paintGame(gameState));
+    this.paintGame(gameState);
   }
 
   // Função que loga qual tecla foi pressionada
