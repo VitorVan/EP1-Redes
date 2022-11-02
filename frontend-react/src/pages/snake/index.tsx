@@ -4,6 +4,7 @@ import { Container, GameChatContainer, Back } from './styles'
 import arrow from '../../images/arrow.svg';
 
 import SnakeGame from '../../components/snakeGame'
+import ChatGame from '../../components/chatGame';
 
 export default function Snake() {
   return (
@@ -14,6 +15,7 @@ export default function Snake() {
       </Back>
       <GameChatContainer>
         <SnakeGame />
+        <ChatGame></ChatGame>
       </GameChatContainer>
     </Container>
   );

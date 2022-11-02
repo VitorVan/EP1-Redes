@@ -6,6 +6,7 @@ import morgan from 'morgan'
 
 import { handleNewJoin as handleNewSnakeJoin } from './snake/game';
 import IJoin from './types/socket.types';
+import { handleMessage } from './chat';
 const crypto = require("crypto");
 
 const app = express();
@@ -24,26 +25,13 @@ app.use(cors({
 app.use(morgan('dev'));
 
 io.on('connection', (socket) => {
-  console.log(`New user connected to socket.io ->  ${socket.id}`);
-
-  socket.emit('message', {message: 'Hello World'});
-
-  socket.on('join', (props: IJoin) => {
-    console.log(`User joined room ->  ${props.room}`);
-    socket.join(props.room);
-    socket.emit('message', `You joined room ->  ${props.room}`);
-    socket.to(props.room).emit('roomMessage', `User joined room ->  ${props.room}`);
-    socket.emit('rooms', io.sockets.adapter.rooms);
-    socket.broadcast.emit('rooms', Array.from(io.sockets.adapter.rooms));
-    console.log('user rooms', socket.rooms)
-    console.log('io rooms', Array.from(io.sockets.adapter.rooms.keys()))
-  })
-})
-
-io.on('connection', (socket) => {
   socket.on('joinSnake', () => {
     handleNewSnakeJoin(socket);
   });
+
+  socket.on('message', (message) => {
+    handleMessage(socket, message)
+  })
 })
 
 
