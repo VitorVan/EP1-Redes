@@ -251,7 +251,6 @@ function handleNewJoin(socket: any) {
     roomName = generateNewId();
     clientRooms[socket.id] = roomName;
     state[roomName] = initGame();
-
     socket.join(roomName);
     socket.actualRoom = roomName;
     socket.number = 1;
