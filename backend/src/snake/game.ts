@@ -250,8 +250,6 @@ function handleNewJoin(socket: any) {
   if (waitingRoomState === 1) {
     roomName = generateNewId();
     clientRooms[socket.id] = roomName;
-    socket.emit('gameCode', roomName);
-
     state[roomName] = initGame();
 
     socket.join(roomName);
