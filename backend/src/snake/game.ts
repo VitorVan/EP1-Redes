@@ -255,6 +255,7 @@ function handleNewJoin(socket: any) {
     state[roomName] = initGame();
 
     socket.join(roomName);
+    socket.actualRoom = roomName;
     socket.number = 1;
     waitingRoomState = 2;
     lastCreatedGameRoom = roomName;
@@ -262,6 +263,7 @@ function handleNewJoin(socket: any) {
   } else if (waitingRoomState === 2) {
     clientRooms[socket.id] = lastCreatedGameRoom;
     socket.join(lastCreatedGameRoom);
+    socket.actualRoom = lastCreatedGameRoom;
     socket.number = 2;
     waitingRoomState = 1;
     socket.emit('init', 2);
@@ -272,6 +274,11 @@ function handleNewJoin(socket: any) {
   socket.on('keydown', (keyCode: string) => {
     handleKeydown(socket, state, keyCode)
   });
+
+  socket.on('leaveRoom', () => {
+    socket.leave(socket.actualRoom);
+    console.log(socket.rooms);
+  })
 }
 
 
