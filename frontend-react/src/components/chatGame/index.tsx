@@ -1,7 +1,7 @@
 import React, {} from 'react';
-
+import send from '../../images/send.svg';
 import { socket } from '../../App';
-import { ChatContainer, EmitButton, Message, MessageContainer, MessagesContainer } from './styles';
+import { ChatContainer, EmitButton, Message, MessageContainer, MessagesContainer, UserName, UserMessage } from './styles';
 
 interface IMessage {
   message: string;
@@ -33,15 +33,17 @@ export default function ChatGame() {
       <MessagesContainer>
         {messages.map(message => (
             <div>
-              <p>{message.user}</p>
-              <p>{message.message}</p>
+              <UserName>{message.user}</UserName>
+              <UserMessage>{message.message}</UserMessage>
             </div>
           ))
         }
       </MessagesContainer>
       <MessageContainer>
         <Message onChange={handleChange} value={message}/>
-        <EmitButton onClick={handleClick}>Enviar</EmitButton>
+        <EmitButton onClick={handleClick}>
+          <img src={send} alt="" />
+        </EmitButton>
       </MessageContainer>
     </ChatContainer>
   )

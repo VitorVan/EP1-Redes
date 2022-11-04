@@ -14,6 +14,10 @@ export const Container = styled.div`
 export const GameChatContainer = styled.div`
   display: flex;
   flex-direction: row;
+
+  div {
+    margin-left: 10px;
+  }
 `
 
 export const Back = styled(Link)`
