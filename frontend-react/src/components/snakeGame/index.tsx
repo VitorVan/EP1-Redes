@@ -97,7 +97,6 @@ function init(gameState: GameState, canvas: HTMLCanvasElement) {
       document.addEventListener('keydown', keydown);
       socket.on('gameState', (gameState) => handleGameState(gameState, canvas, context));
       socket.off('gameOver').on('gameOver', (winner) => handleGameOver(winner, canvas, context));
-      socket.off('gameCode').on('gameCode', handleGameCode);
     }
 }
 
@@ -160,8 +159,4 @@ function handleGameOver(obj: string, canvas: HTMLCanvasElement, context: CanvasR
 
 export function handleInit(number: string) {
   playerNumber = parseInt(number);
-}
-
-function handleGameCode(gameCode: string) {
-  console.log(gameCode);
 }
