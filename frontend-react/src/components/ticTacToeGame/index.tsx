@@ -27,20 +27,15 @@ export default function TicTacToeGame() {
   ]);
 
   const [timer, setTimer] = useState<number>(60);
-  const [actualPlayer, setActualPlayer] = useState<number>(60);
-
-  const [myNumber, setMyNumber] = useState<number>(0);
-
-  function isMyTurn(): boolean {
-    return playerNumber === actualPlayer;
-  }
+  const [winner, setWinner] = useState<number | null>(null);
 
   socket.on('gameOver', (data) => {
     console.log(data);
+    setWinner(data.winner);
   })
 
   socket.on('gameState', (gameState: string) => {
-    const {board, timer, actualPlayer} = JSON.parse(gameState);
+    const {board, timer} = JSON.parse(gameState);
 
     const newMatrix = board.map((row: number[]) => {
       return row.map((cell: number) => {
@@ -56,17 +51,54 @@ export default function TicTacToeGame() {
 
     setMatrix(newMatrix);
     setTimer(timer);
-    setActualPlayer(actualPlayer);
-  });
-
-  socket.on('init', playerNumber => {
-    setMyNumber(+playerNumber);
+    console.log(newMatrix);
   });
 
   socket.on('timer', (time) => {
     setTimer(time);
   })
 
+
+  function normalPlay(){
+    return (
+      <div>
+        {matrix.map((row, rowIdx) => {
+          return (
+            <RowContainer key={rowIdx}>
+              {row.map((column, columnIdx) => (
+                <Cell
+                  type="button"
+                  key={columnIdx}
+                  borderRight={columnIdx < 2}
+                  borderLeft={columnIdx > 0}
+                  borderBottom={rowIdx < 2}
+                  borderTop={rowIdx > 0}
+                  onClick={() => handlePlayerTurn(rowIdx, columnIdx)}
+                >
+                  {column && column !== "null" ? (
+                    column === "x" ? (
+                      <X />
+                    ) : (
+                      <O />
+                    )
+                  ) : null}
+                </Cell>
+              ))}
+            </RowContainer>
+          );
+        })}
+      </div>
+    )
+  }
+
+  function gameOver() {
+    return (
+      <div>
+        <h1>Game Over</h1>
+        <h2>Winner: {winner}</h2>
+      </div>
+    )
+  }
   function handlePlayerTurn(row: number, column: number) {
     socket.emit('play', {row, column});
   }
@@ -74,31 +106,7 @@ export default function TicTacToeGame() {
   return (
     <GameContainer>
       <TimerTitle>Seu turno acaba em {timer}s</TimerTitle>
-      {matrix.map((row, rowIdx) => {
-        return (
-          <RowContainer key={rowIdx}>
-            {row.map((column, columnIdx) => (
-              <Cell
-                type="button"
-                key={columnIdx}
-                borderRight={columnIdx < 2}
-                borderLeft={columnIdx > 0}
-                borderBottom={rowIdx < 2}
-                borderTop={rowIdx > 0}
-                onClick={() => handlePlayerTurn(rowIdx, columnIdx)}
-              >
-                {column && column !== "null" ? (
-                  column === "x" ? (
-                    <X />
-                  ) : (
-                    <O />
-                  )
-                ) : null}
-              </Cell>
-            ))}
-          </RowContainer>
-        );
-      })}
+      {winner ? gameOver() : normalPlay()}
     </GameContainer>
   );
 }
