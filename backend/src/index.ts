@@ -5,6 +5,7 @@ import cors from 'cors'
 import morgan from 'morgan'
 
 import { handleNewJoin as handleNewSnakeJoin } from './snake/game';
+import { handleNewJoin as handleNewTicTacToeJoin } from './ticTacToe/game';
 import IJoin from './types/socket.types';
 import { handleMessage } from './chat';
 const crypto = require("crypto");
@@ -28,6 +29,10 @@ io.on('connection', (socket) => {
   socket.on('joinSnake', () => {
     handleNewSnakeJoin(socket);
   });
+
+  socket.on('joinTicTacToe', () => {
+    handleNewTicTacToeJoin(socket);
+  })
 
   socket.on('message', (message) => {
     handleMessage(socket, message)

@@ -264,7 +264,7 @@ function handleNewJoin(socket: any) {
     socket.number = 2;
     waitingRoomState = 1;
     socket.emit('init', 2);
-    io.sockets.in(lastCreatedGameRoom).emit('GameStarting');
+    io.sockets.in(lastCreatedGameRoom).emit('GameStarting', 'snake');
     startGameInterval(lastCreatedGameRoom);
   }
 
