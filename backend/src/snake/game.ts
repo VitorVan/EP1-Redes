@@ -1,9 +1,7 @@
-import { GRID_SIZE, FRAME_RATE } from'./constants';
 import { generateNewId } from '..';
-import socketio from 'socket.io';
 import { io } from '..'
 
-
+// Cria a tipagem do estado do jogo
 interface GameState {
   players: Array<{
     pos: {
@@ -77,7 +75,7 @@ function createGameState() {
       x: 0,
       y: 0,
     },
-    gridsize: GRID_SIZE,
+    gridsize: 20,
     isActive: 1,
   }
 }
@@ -93,11 +91,11 @@ function startGameInterval(roomName: string) {
       state[roomName] = null;
       clearInterval(intervalId);
     }
-  }, 1000 / FRAME_RATE)
+  }, 100)
 }
 
 function emitGameState(roomName: string, state: GameState) {
-  io.sockets.in(roomName).emit('gameState', JSON.stringify(state));
+  io.sockets.in(roomName).emit('snakeGameState', JSON.stringify(state));
 }
 
 function emitGameOver(roomName: string, winner: number) {
@@ -106,8 +104,8 @@ function emitGameOver(roomName: string, winner: number) {
 
 function randomFood(state: GameState): void {
   const food = {
-    x: Math.floor(Math.random() * GRID_SIZE),
-    y: Math.floor(Math.random() * GRID_SIZE),
+    x: Math.floor(Math.random() * 20),
+    y: Math.floor(Math.random() * 20),
   }
 
   for (let cell of state.players[0].snake) {
@@ -139,11 +137,11 @@ function gameLoop(state: GameState): number {
   playerTwo.pos.y += playerTwo.vel.y;
 
   // player saiu da tela
-  if (playerOne.pos.x < 0 || playerOne.pos.x > GRID_SIZE || playerOne.pos.y < 0 || playerOne.pos.y > GRID_SIZE) {
+  if (playerOne.pos.x < 0 || playerOne.pos.x > 20 || playerOne.pos.y < 0 || playerOne.pos.y > 20) {
     return 2;
   }
 
-  if (playerTwo.pos.x < 0 || playerTwo.pos.x > GRID_SIZE || playerTwo.pos.y < 0 || playerTwo.pos.y > GRID_SIZE) {
+  if (playerTwo.pos.x < 0 || playerTwo.pos.x > 20 || playerTwo.pos.y < 0 || playerTwo.pos.y > 20) {
     return 1;
   }
 
@@ -274,7 +272,6 @@ function handleNewJoin(socket: any) {
 
   socket.on('leaveRoom', () => {
     socket.leave(socket.actualRoom);
-    console.log(socket.rooms);
   })
 }
 

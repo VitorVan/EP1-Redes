@@ -13,7 +13,6 @@ export default function ChatGame() {
   const [messages, setMessages] = React.useState<IMessage[]>([]);
 
   socket.on('message', (message: IMessage) => {
-    console.log('chegou')
     setMessages([...messages, message]);
   })
 
