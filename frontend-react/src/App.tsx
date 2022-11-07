@@ -5,7 +5,9 @@ import Routes from './routes';
 
 import { io } from "socket.io-client";
 
-export const socket = io("http://localhost:3000/");
+const url = process.env.REACT_APP_SERVER_URL || 'http://localhost:3333';
+
+export const socket = io(url);
 
 socket.on("connect", () => {
   console.log("Client has connected to socket", socket.id); // x8WIv7-mJelg7on_ALbx
