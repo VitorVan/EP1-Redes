@@ -8,6 +8,9 @@ import {
   X,
   O,
   TimerTitle,
+  GameOverContainer,
+  WinText,
+  LoseText
 } from "./styles";
 
 
@@ -30,11 +33,11 @@ export default function TicTacToeGame() {
   const [winner, setWinner] = useState<number | null>(null);
 
   socket.on('gameOver', (data) => {
-    console.log(data);
-    setWinner(data.winner);
+    const winnerData = JSON.parse(data);
+    setWinner(winnerData.winner);
   })
 
-  socket.on('gameState', (gameState: string) => {
+  socket.on('tictactoeGameState', (gameState: string) => {
     const {board, timer} = JSON.parse(gameState);
 
     const newMatrix = board.map((row: number[]) => {
@@ -51,7 +54,6 @@ export default function TicTacToeGame() {
 
     setMatrix(newMatrix);
     setTimer(timer);
-    console.log(newMatrix);
   });
 
   socket.on('timer', (time) => {
@@ -93,20 +95,22 @@ export default function TicTacToeGame() {
 
   function gameOver() {
     return (
-      <div>
+      <GameOverContainer>
         <h1>Game Over</h1>
-        <h2>Winner: {winner}</h2>
-      </div>
+        {winner === playerNumber ? <WinText>Você ganhou!</WinText> : <LoseText>Você perdeu!</LoseText>}
+      </GameOverContainer>
     )
   }
+
   function handlePlayerTurn(row: number, column: number) {
     socket.emit('play', {row, column});
   }
 
   return (
     <GameContainer>
-      <TimerTitle>Seu turno acaba em {timer}s</TimerTitle>
-      {winner ? gameOver() : normalPlay()}
+      {!winner && <TimerTitle>Seu turno acaba em {timer}s</TimerTitle>}
+      {winner && gameOver()}
+      {!winner && normalPlay()}
     </GameContainer>
   );
 }

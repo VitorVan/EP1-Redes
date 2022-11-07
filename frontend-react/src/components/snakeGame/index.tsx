@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect } from 'react';
 
 import { CanvasContainer } from './styles';
 
@@ -95,7 +95,7 @@ function init(gameState: GameState, canvas: HTMLCanvasElement) {
       context.fillRect(0, 0, canvas!.width, canvas!.height);
 
       document.addEventListener('keydown', keydown);
-      socket.on('gameState', (gameState) => handleGameState(gameState, canvas, context));
+      socket.on('snakeGameState', (gameState) => handleGameState(gameState, canvas, context));
       socket.off('gameOver').on('gameOver', (winner) => handleGameOver(winner, canvas, context));
     }
 }
@@ -136,9 +136,6 @@ function handleGameState(gameState: string, canvas: HTMLCanvasElement, context: 
 
 function handleGameOver(obj: string, canvas: HTMLCanvasElement, context: CanvasRenderingContext2D) {
   const winner = JSON.parse(obj).winner;
-
-  console.log(winner)
-  console.log(playerNumber)
 
   if (winner === playerNumber ) {
     context.fillStyle = '#15BD6C';

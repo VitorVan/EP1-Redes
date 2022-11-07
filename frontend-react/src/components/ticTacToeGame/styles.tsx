@@ -7,6 +7,7 @@ import styled from "styled-components";
 
 export const GameContainer = styled.div`
   display: flex;
+  min-width: 600px;
   flex-direction: column;
   justify-content: center;
   align-items: center;
@@ -77,3 +78,25 @@ export const O = styled.span`
     content: "O";
   }
 `;
+
+export const GameOverContainer = styled.div`
+  width: 50%;
+  height: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  h1 {
+    color: #ffffff;
+  }
+`
+
+export const WinText = styled.h2`
+  color: #ffffff;
+`
+
+export const LoseText = styled.h2`
+  color: #C64C44;
+`
+

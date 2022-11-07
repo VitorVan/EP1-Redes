@@ -44,7 +44,7 @@ function startGameInterval(roomName: string) {
 
 
 function handleEmitGameState(state: GameState, roomName: string) {
-  io.sockets.in(roomName).emit('gameState', JSON.stringify(state));
+  io.sockets.in(roomName).emit('tictactoeGameState', JSON.stringify(state));
 }
 
 function gameLoop(state: GameState, roomName: string): number {
@@ -127,6 +127,10 @@ function handleNewJoin(socket: any) {
     if (!roomName) return;
 
     const actualState = state[roomName];
+
+    if (!actualState) {
+      return;
+    }
 
     if(actualState.actualPlayer !== socket.number) return;
     actualState.actualPlayer = actualState.actualPlayer === 1 ? 2 : 1;
