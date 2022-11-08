@@ -1,4 +1,5 @@
-import React from 'react';
+import React from "react";
+
 import jogoDaVelha from '../../images/jogoDaVelha.svg';
 import snake from '../../images/snake.svg';
 import { Container, Title, NavbarLink, GameTitle, ButtonsContainer } from './styles';
@@ -7,18 +8,19 @@ import { handleInit as handleInitSnake } from '../../components/snakeGame'
 import { socket } from '../../App';
 import { handleInitTicTacToe } from '../../components/ticTacToeGame';
 
+/** Função responsável pelo cliente enviar socket de início de jogo ao servidor, para o "snake game" */
 function handleJoinSnake() {
-  console.log('Entrou no jogo da cobrinha');
   socket.on('init', handleInitSnake);
   socket.emit('joinSnake')
 }
 
+/** Função responsável pelo cliente enviar socket de início de jogo ao servidor, para o "tic tac toe game" */
 function handleJoinTicTacToe() {
-  console.log('Entrou no jogo da velha');
   socket.on('init', handleInitTicTacToe);
   socket.emit('joinTicTacToe')
 }
 
+/** Função que representa a tela inicial da aplicaçãp, contendo as 2 opções de jogos que o usuário pode escolher */
 export default function Home() {
   return (
     <Container>
