@@ -1,8 +1,12 @@
+/** Material técnico utilizado para inspiração */
+/**
+ * https://www.youtube.com/watch?v=ppcBIHv_ZPs
+ */
+
 import React, { useRef, useEffect } from 'react';
-
 import { CanvasContainer } from './styles';
-
 import { socket } from "../../App";
+
 interface GameState {
   players: Array<{
     pos: {
@@ -27,6 +31,7 @@ interface GameState {
 
 let playerNumber: number;
 
+/** Função responsável pelo board visual e interações lógicas do "snake game" */
 export default function SnakeGame() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -85,6 +90,7 @@ export default function SnakeGame() {
   )
 }
 
+/** Função responsável por construir board visual do "snake game", definindo tamanhos e cores, por exemplo e lidar com o estado e o fim do jogo recebidos pelo socket */
 function init(gameState: GameState, canvas: HTMLCanvasElement) {
   const context = canvas.getContext('2d');
     if (context != null) {
@@ -100,10 +106,12 @@ function init(gameState: GameState, canvas: HTMLCanvasElement) {
     }
 }
 
+/** Função responsável por emitir a mensagem com a tecla que foi pressionada */
 function keydown(e: KeyboardEvent) {
   socket.emit('keydown', e.keyCode);
 }
 
+/** Função responsável por renderizar o canvas com o jogo na tela */
 function paintGame(state: GameState, canvas: HTMLCanvasElement, context: CanvasRenderingContext2D) {
   context.fillStyle = '#15BDAC';
   context.fillRect(0, 0, canvas!.width, canvas!.height);

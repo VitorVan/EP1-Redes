@@ -1,3 +1,8 @@
+/** Material técnico utilizado para inspiração */
+/**
+ * https://www.youtube.com/watch?v=aA_SdbGD64E
+ */
+
 import React, { useState } from "react";
 import { socket } from "../../App";
 
@@ -13,15 +18,11 @@ import {
   LoseText
 } from "./styles";
 
-
-
 export type IPlayMatrix = Array<Array<string | null>>;
-export interface IStartGame {
-  start: boolean;
-  symbol: "x" | "o";
-}
+
 let playerNumber: number;
 
+/** Função responsável pelo board visual e interações lógicas do "tic tac toe game" */
 export default function TicTacToeGame() {
   const [matrix, setMatrix] = useState<IPlayMatrix>([
     ['', '', ''],
@@ -32,11 +33,13 @@ export default function TicTacToeGame() {
   const [timer, setTimer] = useState<number>(60);
   const [winner, setWinner] = useState<number | null>(null);
 
+  /** Parte do código que lida com o recebimento da mensagem de fim de jogo */
   socket.on('gameOver', (data) => {
     const winnerData = JSON.parse(data);
     setWinner(winnerData.winner);
   })
 
+  /** Parte do código que lida com o recebimento da mensagem de estado do jogo e faz sua atualização visual */
   socket.on('tictactoeGameState', (gameState: string) => {
     const {board, timer} = JSON.parse(gameState);
 
@@ -56,6 +59,7 @@ export default function TicTacToeGame() {
     setTimer(timer);
   });
 
+  /** Parte do código que lida com o recebimento da mensagem do timer e faz sua atualização */
   socket.on('timer', (time) => {
     setTimer(time);
   })
@@ -102,6 +106,7 @@ export default function TicTacToeGame() {
     )
   }
 
+  /** Função responsável por emitir a mensagem de jogada, com a linha e coluna escolhidas */
   function handlePlayerTurn(row: number, column: number) {
     socket.emit('play', {row, column});
   }

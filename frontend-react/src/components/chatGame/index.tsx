@@ -8,6 +8,7 @@ interface IMessage {
   user: string;
 }
 
+/** Função responsável pelo chat, utilizado nos 2 jogos */
 export default function ChatGame() {
   const [message, setMessage] = React.useState('');
   const [messages, setMessages] = React.useState<IMessage[]>([]);
@@ -16,6 +17,7 @@ export default function ChatGame() {
     setMessages([...messages, message]);
   })
 
+  /** Função responsável por emitir a mensagem de uma mensagem enviada pelo usuário no chat */
   function handleClick(e: any){
     e.preventDefault();
     socket.emit('message', message);

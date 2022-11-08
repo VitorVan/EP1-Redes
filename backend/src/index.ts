@@ -1,3 +1,9 @@
+/** Materiais técnicos utilizados para inspiração */
+/**
+ * https://www.youtube.com/watch?v=-jXfKDYJJvo&t=575s
+ * https://www.youtube.com/watch?v=HrkECIzaQvE&t=1800s
+ */
+
 import express from 'express';
 import http from 'http';
 import socketio from 'socket.io';
@@ -25,6 +31,7 @@ app.use(cors({
 
 app.use(morgan('dev'));
 
+/** Criando conexão (sessão) de socket */
 io.on('connection', (socket) => {
   socket.on('joinSnake', () => {
     handleNewSnakeJoin(socket);
@@ -37,12 +44,6 @@ io.on('connection', (socket) => {
   socket.on('message', (message) => {
     handleMessage(socket, message)
   })
-})
-
-
-//Get hello world
-app.get('/', (req, res) => {
-  res.json({message: 'Hello World'});
 })
 
 httpServer.listen(3333, () => {
